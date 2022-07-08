@@ -5,6 +5,9 @@ import contextApi from './Context';
 function Provider({ children }) {
   const [data, setData] = useState([]);
   const [filtred, setFiltred] = useState([]);
+  const [columnFilter, setColumnFilter] = useState('population');
+  const [comparisonFilter, setComparisonFilter] = useState('maior que');
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     const api = async () => {
@@ -25,6 +28,12 @@ function Provider({ children }) {
     setData,
     filtred,
     setFiltred,
+    columnFilter,
+    setColumnFilter,
+    comparisonFilter,
+    setComparisonFilter,
+    value,
+    setValue,
   };
 
   return (

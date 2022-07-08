@@ -2,14 +2,12 @@ import React, { useContext } from 'react';
 import contextApi from '../contextAPI/Context';
 
 function SearchBar() {
-  const { data, filtred, setFiltred } = useContext(contextApi);
+  const { data, setFiltred } = useContext(contextApi);
 
   function searching({ target }) {
     const array = data.filter((element) => element.name.includes(target.value));
     setFiltred(array);
   }
-
-  console.log(filtred);
 
   return (
     <div>
