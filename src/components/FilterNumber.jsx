@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import contextApi from '../contextAPI/Context';
 
 function FilterNumber() {
@@ -11,10 +11,16 @@ function FilterNumber() {
     setValue,
     setFiltred,
     data,
+    column,
+    setColumn,
   } = useContext(contextApi);
 
+  const [filters, setFilters] = useState(false);
+  const [arrays, setArrays] = useState([]);
+  /* const array = []; */
+
   const handleClick = () => {
-    const filtred = data.filter((planet) => {
+    let filtred = data.filter((planet) => {
       if (comparisonFilter === 'maior que') {
         return Number(planet[columnFilter]) > Number(value);
       }
@@ -26,7 +32,35 @@ function FilterNumber() {
       }
       return null;
     });
+    filtred = filtred.filter((planet) => arrays.every((element) => {
+      if (element.comparison === 'maior que') {
+        // console.log(Number(planet[element.column]) > Number(element.val));
+        return Number(planet[element.column]) > Number(element.val);
+      }
+      if (element.comparison === 'menor que') {
+        return Number(planet[element.column]) < Number(element.val);
+      }
+      if (element.comparison === 'igual a') {
+        return Number(planet[element.column]) === Number(element.val);
+      }
+      return false;
+    }));
+    const newColumn = column.filter((option) => option !== columnFilter);
     setFiltred(filtred);
+    setColumn(newColumn);
+    setFilters(true);
+    /* array.push({
+      column: columnFilter,
+      comparison: comparisonFilter,
+      val: value,
+    }); */
+    setArrays((prevState) => [
+      ...prevState,
+      { column: columnFilter, comparison: comparisonFilter, val: value },
+    ]);
+    setColumnFilter(newColumn[0]);
+    setComparisonFilter('maior que');
+    setValue(0);
   };
 
   return (
@@ -35,19 +69,17 @@ function FilterNumber() {
         onChange={ (event) => setColumnFilter(event.target.value) }
         data-testid="column-filter"
       >
-        <option value="population">population</option>
-        <option value="orbital_period">orbital_period</option>
-        <option value="diameter">diameter</option>
-        <option value="rotation_period">rotation_period</option>
-        <option value="surface_water">surface_water</option>
+        {column.map((element) => (
+          <option key={ element }>{element}</option>
+        ))}
       </select>
       <select
         onChange={ (event) => setComparisonFilter(event.target.value) }
         data-testid="comparison-filter"
       >
-        <option value="maior que">maior que</option>
-        <option value="menor que">menor que</option>
-        <option value="igual a">igual a</option>
+        <option key="maior que">maior que</option>
+        <option key="menor que">menor que</option>
+        <option key="igual a">igual a</option>
       </select>
       <input
         onChange={ (event) => setValue(event.target.value) }
@@ -55,13 +87,20 @@ function FilterNumber() {
         value={ value }
         data-testid="value-filter"
       />
-      <button
-        type="button"
-        data-testid="button-filter"
-        onClick={ handleClick }
-      >
+      <button type="button" data-testid="button-filter" onClick={ handleClick }>
         Filtrar
       </button>
+      {filters && (
+        <div>
+          {arrays.map((element, i) => (
+            <div key={ i }>
+              <span>{element.column}</span>
+              <span>{element.comparison}</span>
+              <span>{element.val}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

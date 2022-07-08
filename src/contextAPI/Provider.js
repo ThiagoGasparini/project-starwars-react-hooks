@@ -3,6 +3,9 @@ import propTypes from 'prop-types';
 import contextApi from './Context';
 
 function Provider({ children }) {
+  const columnsArray = ['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water'];
+  const [column, setColumn] = useState([...columnsArray]);
   const [data, setData] = useState([]);
   const [filtred, setFiltred] = useState([]);
   const [columnFilter, setColumnFilter] = useState('population');
@@ -34,6 +37,8 @@ function Provider({ children }) {
     setComparisonFilter,
     value,
     setValue,
+    column,
+    setColumn,
   };
 
   return (
