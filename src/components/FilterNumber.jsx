@@ -67,14 +67,15 @@ function FilterNumber() {
     setArrays(
       (prevState) => prevState.filter((element) => element.column !== columnDelete),
     );
+    setColumn(column);
   };
 
   const handleDeleteAll = () => {
     const columnsArray = ['population', 'orbital_period',
       'diameter', 'rotation_period', 'surface_water'];
-    // setFilters(false);
-    handleClickDelete();
-    setArrays([]);
+    setArrays(
+      (prevState) => prevState.filter((element) => element.column === columnsArray),
+    );
     setColumn(columnsArray);
     setFiltred(data);
   };

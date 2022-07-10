@@ -99,6 +99,14 @@ describe('testando a aplicação ', () => {
 
     expect(await screen.findAllByRole('row')).toHaveLength(1);
     
+    const buttoDel = screen.getByRole('button', {
+      name: /remover filtragens/i
+    })
+    expect(buttoDel).toBeInTheDocument();
+
+   /*  const btn = screen.getByTestId('button-filter');
+    userEvent.click(btn);
+    expect(screen.getByTestId('button-remove-filters')).toBeInTheDocument(); */
   });
 
 })
