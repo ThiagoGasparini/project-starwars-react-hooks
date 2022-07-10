@@ -63,6 +63,22 @@ function FilterNumber() {
     setValue(0);
   };
 
+  const handleClickDelete = (columnDelete) => {
+    setArrays(
+      (prevState) => prevState.filter((element) => element.column !== columnDelete),
+    );
+  };
+
+  const handleDeleteAll = () => {
+    const columnsArray = ['population', 'orbital_period',
+      'diameter', 'rotation_period', 'surface_water'];
+    // setFilters(false);
+    handleClickDelete();
+    setArrays([]);
+    setColumn(columnsArray);
+    setFiltred(data);
+  };
+
   return (
     <div>
       <select
@@ -90,13 +106,27 @@ function FilterNumber() {
       <button type="button" data-testid="button-filter" onClick={ handleClick }>
         Filtrar
       </button>
+      <button
+        type="button"
+        data-testid="button-remove-filters"
+        onClick={ handleDeleteAll }
+      >
+        Remover Filtragens
+      </button>
       {filters && (
         <div>
           {arrays.map((element, i) => (
-            <div key={ i }>
+            <div data-testid="filter" key={ i }>
               <span>{element.column}</span>
               <span>{element.comparison}</span>
               <span>{element.val}</span>
+              <button
+                data-testid="button-remove-filters"
+                onClick={ () => handleClickDelete(element.column) }
+                type="button"
+              >
+                X
+              </button>
             </div>
           ))}
         </div>
