@@ -1,12 +1,96 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
 import App from '../App';
 import userEvent from '@testing-library/user-event';
+import testData from '../../cypress/mocks/testData';
 
 
 describe('testando a aplicação ', () => {
-  
-  it('teste a tela inicial', async () => {
+  beforeEach(async () => {
+    jest.spyOn(global, 'fetch');
+    global.fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(testData)
+    })
+    await act(async () =>{
+    render(<App />)
+    } )
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  }); 
+
+  test('Testes de input, checkbox e botão', () => {
+    const nameFilter = screen.getByTestId('name-filter');
+    const columnFilter = screen.getByTestId('column-filter');
+    const comparisonFilter =screen.getByTestId('comparison-filter')
+    const value = screen.getByTestId('value-filter')
+    const btnFilter = screen.getByTestId('button-filter')
+    const table = screen.getByRole('table')
+    expect(columnFilter).toBeInTheDocument();
+    expect(nameFilter).toBeInTheDocument();
+    expect(table).toBeInTheDocument();
+    expect(comparisonFilter).toBeInTheDocument()
+    expect(value).toBeInTheDocument()
+    expect(btnFilter).toBeInTheDocument()
+
+  });
+
+  test('Testes do input com nome', async () => {
+    const name = screen.getByTestId('name-filter');
+    userEvent.type(name, 'Alderaan')
+    expect(await screen.findAllByRole('row')).toHaveLength(2)
+    userEvent.type(name, 'Hoth')
+    expect(await screen.findAllByRole('row')).toHaveLength(1)
+  });
+
+  test('Testes menor que', async () => {
+    const column = screen.getByTestId('column-filter');
+    const comparison =screen.getByTestId('comparison-filter')
+    const value = screen.getByTestId('value-filter')
+    const btnFilter = screen.getByTestId('button-filter')
+    userEvent.click(column)
+    userEvent.click(screen.getByRole('option', {name:'population'}))
+    userEvent.click(comparison)
+    userEvent.click(screen.getByRole('option', {name: 'menor que'}))
+    userEvent.type(value, '1000000')
+    userEvent.click(btnFilter)
+    screen.queryByText(/population menor que 01000000/i)
+    expect( screen.queryAllByRole('row')).toHaveLength(7)
+    fireEvent.change(screen.getByTestId('comparison-filter'), {target: { value: "menor que"} });
+  });
+
+  test('Testes igual a', async () => {
+    const value = screen.getByTestId('value-filter')
+    const btnFilter = screen.getByTestId('button-filter')
+    fireEvent.change(screen.getByTestId('column-filter'), {target: { value: "rotation_period"} });
+    fireEvent.change(screen.getByTestId('comparison-filter'), {target: { value: "igual a"} });
+    userEvent.type(value, '12')
+    userEvent.click(btnFilter);
+    expect(screen.getByText(/bespin/i)).toBeInTheDocument();
+  });
+
+  test('Testes filtros', async () => {
+    const column = screen.getByTestId('column-filter');
+    const comparison =screen.getByTestId('comparison-filter')
+    const value = screen.getByTestId('value-filter')
+    const btnFilter = screen.getByTestId('button-filter')
+    fireEvent.change(screen.getByTestId('comparison-filter'), {target: { value: "menor que"} });
+    userEvent.type(value, '1000000')
+    userEvent.click(btnFilter);
+    expect(await screen.findAllByRole('row')).toHaveLength(3)
+    userEvent.click(column)
+    userEvent.click(screen.getByRole('option', {name:'rotation_period'}))
+    userEvent.click(comparison)
+    userEvent.click(screen.getByRole('option', {name: 'menor que'}))
+    userEvent.type(value, '20')
+    userEvent.click(btnFilter)
+    screen.queryByText(/population menor que 020/i)
+    expect( screen.queryAllByRole('row')).toHaveLength(3)
+  });
+
+  /* test('teste a tela inicial', async () => {
     render(<App />);
     const searchInput = screen.getByRole('searchbox');
     expect(searchInput).toBeInTheDocument();
@@ -103,10 +187,8 @@ describe('testando a aplicação ', () => {
       name: /remover filtragens/i
     })
     expect(buttoDel).toBeInTheDocument();
+ */
+   
+  /* }); */
 
-   /*  const btn = screen.getByTestId('button-filter');
-    userEvent.click(btn);
-    expect(screen.getByTestId('button-remove-filters')).toBeInTheDocument(); */
-  });
-
-})
+ })

@@ -17,18 +17,18 @@ function Provider({ children }) {
       const response = await fetch('https://swapi-trybe.herokuapp.com/api/planets/');
       const obj = await response.json();
       setData(obj.results);
+      setFiltred(obj.results);
       return obj;
     };
     api();
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     setFiltred(data);
-  }, [data]);
+  }, [data]); */
 
   const contextValue = {
     data,
-    setData,
     filtred,
     setFiltred,
     columnFilter,
